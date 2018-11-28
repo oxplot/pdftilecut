@@ -1,0 +1,6 @@
+[submodule "qpdf/qpdf"]
+	path = qpdf/qpdf
+	url = https://github.com/qpdf/qpdf.git
+[submodule "qpdf/libjpeg-turbo"]
+	path = qpdf/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
