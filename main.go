@@ -556,6 +556,7 @@ func convertToOptimizedPDF(in string, out string) error {
 	}
 	q.SetObjectStreamMode(qpdf.ObjectStreamGenerate)
 	q.SetStreamDataMode(qpdf.StreamDataPreserve)
+	q.SetCompressStreams(true)
 	if err := q.Write(); err != nil {
 		return err
 	}

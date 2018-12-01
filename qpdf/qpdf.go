@@ -84,6 +84,17 @@ func (q *QPDF) SetQDFMode(v bool) {
 	C.qpdf_set_qdf_mode(q.data, qv)
 }
 
+func (q *QPDF) SetCompressStreams(v bool) {
+	if q.closed {
+		return
+	}
+	var qv C.QPDF_BOOL = C.QPDF_FALSE
+	if v {
+		qv = C.QPDF_TRUE
+	}
+	C.qpdf_set_compress_streams(q.data, qv)
+}
+
 func (q *QPDF) SetSuppressWarnings(v bool) {
 	if q.closed {
 		return
