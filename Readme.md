@@ -27,13 +27,13 @@ collection, which comes in 20x30 inch size, on A4 papers:
 $ pdftilecut -tile-size A4 -in mars.pdf -out mars_a4.pdf
 ```
 
-Below on the left is the orignal poster, and two of its tiles on the
+Below on the left is the original poster, and two of its tiles on the
 right:
 
 ![Poster before and after](/img/example.png?raw=true "Poster before and
 after")
 
-The header contains the orignal page number and a tile reference for
+The header contains the original page number and a tile reference for
 easier arranging:
 
 ![Tile heading](/img/heading.png?raw=true "Tile heading")
