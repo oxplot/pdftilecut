@@ -18,7 +18,7 @@ bin/pdftilecut: qpdf zlib libjpeg
 	go build -o bin/pdftilecut -ldflags '-extldflags "-static"'
 
 bin/.submodules-initialized:
-ifneq ($(GIT_DIR),)
+ifneq ($$(git rev-parse --git-dir 2>/dev/null),)
 	git submodule update --init --recursive
 endif
 	mkdir -p $(@D)
