@@ -6,4 +6,4 @@
 	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
 [submodule "c-deps/zlib"]
 	path = c-deps/zlib
-	url = git@github.com:madler/zlib.git
+	url = https://github.com/madler/zlib.git
