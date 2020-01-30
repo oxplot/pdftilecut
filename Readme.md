@@ -8,6 +8,8 @@ can print them on small form printers. This operation is sometimes called
 Latest statically linked binaries [are available on releases
 page](https://github.com/oxplot/pdftilecut/releases).
 
+To build, run `make`.
+
 # Features
 
 * Statically compiled Go binaries with no OS dependencies.

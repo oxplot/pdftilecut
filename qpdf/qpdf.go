@@ -1,7 +1,7 @@
 package qpdf
 
-// #cgo CFLAGS: -I${SRCDIR}/qpdf/include
-// #cgo LDFLAGS: -L${SRCDIR}/zlib -L${SRCDIR}/libjpeg-turbo -L${SRCDIR}/qpdf/libqpdf/build/.libs -lqpdf -lz -ljpeg -lstdc++
+// #cgo CFLAGS: -I${SRCDIR}/../c-deps/qpdf/include
+// #cgo LDFLAGS: -L${SRCDIR}/../c-deps/zlib -L${SRCDIR}/../c-deps/libjpeg-turbo -L${SRCDIR}/../c-deps/qpdf/libqpdf/build/.libs -lqpdf -lz -ljpeg -lstdc++
 // #include <stdlib.h>
 // #include <qpdf/qpdf-c.h>
 import "C"
