@@ -40,8 +40,8 @@ easier arranging:
 
 # Build & Development
 
-You need `automake`, `autogen`, `git`, `go >= 1.13`, `coreutils` and C
-compiler.
+You need `cmake`, `automake`, `autogen`, `git`, `go >= 1.13`,
+`coreutils` and C compiler.
 
 Build using `make` and the static binary will be output to `bin/pdftilecut`.
 
