@@ -12,10 +12,10 @@ libjpeg: bin/.submodules-initialized
 	cd $(LIBJPEG_SRC_DIR) && cmake -G"Unix Makefiles" && make
 
 qpdf: zlib libjpeg bin/.submodules-initialized
-	cd $(QPDF_SRC_DIR)
-	sh -x ./autogen.sh
-	./configure
-	LDFLAGS="-L$(ZLIB_SRC_DIR) -L$(LIBJPEG_SRC_DIR)" CFLAGS="-I$(ZLIB_SRC_DIR) -I$(LIBJPEG_SRC_DIR)" make
+	export LDFLAGS="-L$(ZLIB_SRC_DIR) -L$(LIBJPEG_SRC_DIR)"; \
+	export CFLAGS="-I$(ZLIB_SRC_DIR) -I$(LIBJPEG_SRC_DIR)"; \
+	export CPPFLAGS="$${CFLAGS}"; \
+	cd $(QPDF_SRC_DIR) && ./autogen.sh && ./configure && make
 
 bin/pdftilecut: qpdf zlib libjpeg
 	go build -o bin/pdftilecut -ldflags '-extldflags "-static"'
@@ -31,6 +31,6 @@ build: bin/pdftilecut
 	
 .PHONY: clean
 clean:
-	( cd $(ZLIB_SRC_DIR) && make clean )
-	( cd $(LIBJPEG_SRC_DIR) && make clean )
-	( cd $(QPDF_SRC_DIR) && make clean )
+	cd $(ZLIB_SRC_DIR) && make clean
+	cd $(LIBJPEG_SRC_DIR) && make clean
+	cd $(QPDF_SRC_DIR) && make clean
