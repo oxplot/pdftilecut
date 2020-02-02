@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Dependencies
-        run: apt-get install -y yasm
+        run: sudo apt-get install -y yasm
       - name: Build
         run: make
