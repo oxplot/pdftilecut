@@ -9,13 +9,13 @@ zlib: bin/.submodules-initialized
 	cd $(ZLIB_SRC_DIR) && ./configure --static && make
 
 libjpeg: bin/.submodules-initialized
-	cd $(LIBJPEG_SRC_DIR) && cmake -G"Unix Makefiles" && make
+	cd $(LIBJPEG_SRC_DIR) && cmake -G"Unix Makefiles" -DENABLE_SHARED=0 && make
 
 qpdf: zlib libjpeg bin/.submodules-initialized
 	export LDFLAGS="-L$(ZLIB_SRC_DIR) -L$(LIBJPEG_SRC_DIR)"; \
 	export CFLAGS="-I$(ZLIB_SRC_DIR) -I$(LIBJPEG_SRC_DIR)"; \
 	export CPPFLAGS="$${CFLAGS}"; \
-	cd $(QPDF_SRC_DIR) && ./autogen.sh && ./configure && make
+	cd $(QPDF_SRC_DIR) && ./autogen.sh && ./configure --disable-shared && make
 
 bin/pdftilecut: qpdf zlib libjpeg
 	go build -o bin/pdftilecut -ldflags '-extldflags "-static"'
