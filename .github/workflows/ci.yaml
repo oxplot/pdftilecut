@@ -6,5 +6,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup dependencies
-        run: echo Doing work here; sleep 30
+      - uses: actions/checkout@v2
+      - name: Build
+        run: make
