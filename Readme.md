@@ -1,3 +1,5 @@
+![Build Static Binaries](https://github.com/oxplot/pdftilecut/workflows/Build%20Static%20Binaries/badge.svg)
+
 **pdftilecut** lets you sub-divide a PDF page(s) into smaller pages so you
 can print them on small form printers. This operation is sometimes called
 *posterizing* (related to printing large posters on home printers) and

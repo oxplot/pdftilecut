@@ -14,7 +14,3 @@ jobs:
         run: sudo apt-get install -y yasm auto{gen,conf,make}
       - name: Build
         run: make
-      - uses: actions/upload-artifact@v1
-        with:
-          name: static-binaries
-          path: bin/
