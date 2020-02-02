@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Dependencies
-        run: sudo apt-get install -y yasm autogen
+        run: sudo apt-get install -y yasm auto{gen,conf,make}
       - name: Build
         run: make
