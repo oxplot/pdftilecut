@@ -3,6 +3,12 @@ ZLIB_SRC_DIR    := $(C_DEPS_DIR)/zlib
 LIBJPEG_SRC_DIR := $(C_DEPS_DIR)/libjpeg-turbo
 QPDF_SRC_DIR    := $(C_DEPS_DIR)/qpdf
 
+UNAME := $(shell uname)
+
+ifneq ($(UNAME), Darwin)
+XGO_LDFLAGS += -extldflags "-static"
+endif
+
 all: build
 
 zlib: .submodules-initialized
@@ -18,7 +24,7 @@ qpdf: zlib libjpeg .submodules-initialized
 	cd $(QPDF_SRC_DIR) && ./autogen.sh && ./configure --disable-shared && make
 
 bin/pdftilecut: qpdf zlib libjpeg
-	go build -o bin/pdftilecut -ldflags '-extldflags "-static"'
+	go build -o bin/pdftilecut -ldflags "$(XGO_LDFLAGS)"
 
 .submodules-initialized:
 ifneq ($$(git rev-parse --git-dir 2>/dev/null),)

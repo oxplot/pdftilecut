@@ -42,7 +42,7 @@ easier arranging:
 
 # Build & Development
 
-You need `cmake`, `automake`, `autogen`, `git`, `go >= 1.13`,
+You need `yasm`, `cmake`, `automake`, `autogen`, `git`, `go >= 1.13`,
 `coreutils` and C compiler.
 
 Build using `make` and the static binary will be output to `bin/pdftilecut`.
