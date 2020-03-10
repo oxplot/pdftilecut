@@ -2,8 +2,9 @@ name: Build Static Binaries
 on: [push]
 
 jobs:
-  build:
-    name: Build
+
+  build-linux-amd64:
+    name: Build Linux amd64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,3 +15,101 @@ jobs:
         run: sudo apt-get install -y yasm auto{gen,conf,make}
       - name: Build
         run: make
+      - uses: actions/upload-artifact@v1
+        with:
+          name: linux-amd64
+          path: bin/pdftilecut
+
+  build-darwin-amd64:
+    name: Build Darwin amd64
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Dependencies
+        run: |
+          brew update
+          brew install go@1.13 yasm automake autogen coreutils 
+      - name: Build
+        run: make
+      - uses: actions/upload-artifact@v1
+        with:
+          name: darwin-amd64
+          path: bin/pdftilecut
+
+  release:
+    name: Release
+    needs: [build-linux-amd64, build-darwin-amd64]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: linux-amd64
+      - uses: actions/download-artifact@v1
+        with:
+          name: darwin-amd64
+      - name: Compress artifacts
+        run: |
+          ( cd linux-amd64; zip ../pdftilecut-linux-amd64.zip pdftilecut )
+          ( cd darwin-amd64; zip ../pdftilecut-darwin-amd64.zip pdftilecut )
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+      - uses: docker://ferrarimarco/github-changelog-generator:latest
+        with:
+          args: -u oxplot -p pdftilecut
+      - name: Generate Changelog
+        id: gen_changelog
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          cat CHANGELOG.md
+          body="$(< CHANGELOG.md python -c '
+          import sys
+          import os
+
+          tag = os.getenv("RELEASE_REF").replace("refs/tags/", "")
+
+          in_block = False
+          for l in sys.stdin:
+            if l.startswith("## [%s]" % tag):
+              in_block = True
+            elif l.startswith("## ["):
+              in_block = False
+            if in_block:
+              sys.stdout.write(l)
+          ')"
+          # https://github.com/actions/create-release/issues/25#issuecomment-575435307
+          body="${body//$'%'/%25}"
+          body="${body//$'\n'/%0A}"
+          body="${body//$'\r'/%0D}"
+          echo ref $RELEASE_REF
+          echo body $body
+          echo "::set-output name=release_body::$body"
+
+      - id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{ steps.gen_changelog.outputs.release_body }}
+          draft: true
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pdftilecut-linux-amd64.zip
+          asset_name: pdftilecut-linux-amd64.zip
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pdftilecut-darwin-amd64.zip
+          asset_name: pdftilecut-darwin-amd64.zip
+          asset_content_type: application/zip
