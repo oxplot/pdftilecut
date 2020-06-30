@@ -50,8 +50,8 @@ jobs:
           name: darwin-amd64
       - name: Compress artifacts
         run: |
-          ( cd linux-amd64; zip ../pdftilecut-linux-amd64.zip pdftilecut )
-          ( cd darwin-amd64; zip ../pdftilecut-darwin-amd64.zip pdftilecut )
+          ( cd linux-amd64; chmod +x pdftilecut; zip ../pdftilecut-linux-amd64.zip pdftilecut )
+          ( cd darwin-amd64; chmod +x pdftilecut; zip ../pdftilecut-darwin-amd64.zip pdftilecut )
 
       - uses: actions/setup-python@v1
         with:
