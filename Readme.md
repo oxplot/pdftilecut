@@ -17,7 +17,7 @@ page](https://github.com/oxplot/pdftilecut/releases).
 * Each output page has appropriate PDF bleed and trim boxes set (so you
   can give it to a printing house and get back correctly trimmed pages).
 * Print marks to assist with accurate trimming and arranging.
-* Small increase in output size.
+* Small increase in output file size.
 
 # Usage
 
