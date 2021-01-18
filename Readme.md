@@ -10,8 +10,10 @@ can print them on small form printers. This operation is sometimes called
 Latest statically linked binaries [are available on releases
 page](https://github.com/oxplot/pdftilecut/releases).
 
-Alternatively, you can install it on macOS with homebrew: `brew install
-pdftilecut`
+Alternatively, you can install it:
+
+* on macOS with homebrew: `brew install pdftilecut`
+* on ArchLinux from AUR: `yay -S pdftilecut`
 
 # Features
 
