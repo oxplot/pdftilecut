@@ -12,8 +12,11 @@ page](https://github.com/oxplot/pdftilecut/releases).
 
 Alternatively, you can install it:
 
-* on macOS with homebrew: `brew install pdftilecut`
-* on ArchLinux from AUR: `yay -S pdftilecut`
+* on macOS with [homebrew](https://formulae.brew.sh/formula/pdftilecut):
+  `brew install pdftilecut`
+* on ArchLinux from
+  [AUR](https://aur.archlinux.org/packages/pdftilecut/): `yay -S
+  pdftilecut`
 
 # Features
 
