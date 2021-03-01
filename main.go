@@ -93,6 +93,8 @@ var (
 	outputFile = flag.String("out", "-", "output PDF")
 	tileTitle  = flag.String("title", "", "title to show on margin of each tile (defaults to input filename)")
 	debugMode  = flag.Bool("debug", false, "run in debug mode")
+	longTrimMarks = flag.Bool("long-trim-marks", false, "Use full width/height trim marks")
+	hideLogo = flag.Bool("hide-logo", false, "Hide the logo")
 	tileSize   TileSizeFlag
 )
 
@@ -379,27 +381,44 @@ func createOverlayForPage(overlayId int, p *page) string {
 		bb.llx, bb.lly, bb.urx, bb.lly, bb.urx, bb.ury, bb.llx, bb.ury,
 	)
 	// Draw trim marks
-	stream += fmt.Sprintf(` q
-	    0 0 0 rg %f w
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-      %f %f m %f %f l S
-    Q `,
-		trimMarkLineWidth,
-		mb.llx-1, tb.lly, bb.llx, tb.lly,
-		mb.llx-1, tb.ury, bb.llx, tb.ury,
-		tb.llx, mb.ury+1, tb.llx, bb.ury,
-		tb.urx, mb.ury+1, tb.urx, bb.ury,
-		bb.urx, tb.ury, mb.urx+1, tb.ury,
-		bb.urx, tb.lly, mb.urx+1, tb.lly,
-		tb.llx, bb.lly, tb.llx, mb.lly-1,
-		tb.urx, bb.lly, tb.urx, mb.lly-1,
-	)
+
+	if !*longTrimMarks {
+		stream += fmt.Sprintf(` q
+		    0 0 0 rg %f w
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	    Q `,
+			trimMarkLineWidth,
+			mb.llx-1, tb.lly, bb.llx, tb.lly,
+			mb.llx-1, tb.ury, bb.llx, tb.ury,
+			tb.llx, mb.ury+1, tb.llx, bb.ury,
+			tb.urx, mb.ury+1, tb.urx, bb.ury,
+			bb.urx, tb.ury, mb.urx+1, tb.ury,
+			bb.urx, tb.lly, mb.urx+1, tb.lly,
+			tb.llx, bb.lly, tb.llx, mb.lly-1,
+			tb.urx, bb.lly, tb.urx, mb.lly-1,
+		)
+	} else {
+		stream += fmt.Sprintf(` q
+		    0 0 0 rg %f w
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	      %f %f m %f %f l S
+	    Q `,
+			trimMarkLineWidth,
+			mb.llx-1, tb.lly, mb.urx+1, tb.lly,		// bottom trim line
+			mb.llx-1, tb.ury, mb.urx+1, tb.ury,		// top trim line
+			tb.llx, mb.lly-1, tb.llx, mb.ury+1,		// left trim line
+			tb.urx, mb.lly-1, tb.urx, mb.ury+1,		// right trim line
+		)
+	}
 	// Draw tile ref
 	vch := float32(vecCharHeight)
 	stream += fmt.Sprintf(`
@@ -436,11 +455,13 @@ func createOverlayForPage(overlayId int, p *page) string {
 		tb.llx+vch/2, bb.lly-vch/2, strToVecChars(*tileTitle, 1, -1),
 	)
 	// Draw logo
-	logoScale := float32(trimMargin+bleedMargin) / (4 * float32(logoDim))
-	logoScaledSize := float32(logoDim) * logoScale
-	stream += fmt.Sprintf(` q 0 0 0 rg q 1 0 0 1 %f %f cm q %f 0 0 %f 0 0 cm %s Q Q Q `,
-		bb.llx-logoScaledSize, bb.lly-logoScaledSize, logoScale, logoScale, logoGSCmds,
-	)
+	if !*hideLogo {
+		logoScale := float32(trimMargin+bleedMargin) / (4 * float32(logoDim))
+		logoScaledSize := float32(logoDim) * logoScale
+		stream += fmt.Sprintf(` q 0 0 0 rg q 1 0 0 1 %f %f cm q %f 0 0 %f 0 0 cm %s Q Q Q `,
+			bb.llx-logoScaledSize, bb.lly-logoScaledSize, logoScale, logoScale, logoGSCmds,
+		)
+	}
 	p.contentIds = append(p.contentIds, overlayId)
 	return fmt.Sprintf("%d 0 obj\n<< /Length %d >> stream\n%sendstream\nendobj\n",
 		overlayId, len(stream), stream)
