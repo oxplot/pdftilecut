@@ -93,8 +93,8 @@ var (
 	outputFile = flag.String("out", "-", "output PDF")
 	tileTitle  = flag.String("title", "", "title to show on margin of each tile (defaults to input filename)")
 	debugMode  = flag.Bool("debug", false, "run in debug mode")
-	continuousTrimMarks = flag.Bool("contTrimMarks", false, "Use full width/height trim marks")
-	hideLogo = flag.Bool("hidelogo", false, "Hide the logo")
+	continuousTrimMarks = flag.Bool("cont-trim-marks", false, "Use full width/height trim marks")
+	hideLogo = flag.Bool("hide-logo", false, "Hide the logo")
 	tileSize   TileSizeFlag
 )
 
