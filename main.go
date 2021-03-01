@@ -93,7 +93,7 @@ var (
 	outputFile = flag.String("out", "-", "output PDF")
 	tileTitle  = flag.String("title", "", "title to show on margin of each tile (defaults to input filename)")
 	debugMode  = flag.Bool("debug", false, "run in debug mode")
-	continuousTrimMarks = flag.Bool("cont-trim-marks", false, "Use full width/height trim marks")
+	longTrimMarks = flag.Bool("long-trim-marks", false, "Use full width/height trim marks")
 	hideLogo = flag.Bool("hide-logo", false, "Hide the logo")
 	tileSize   TileSizeFlag
 )
@@ -382,7 +382,7 @@ func createOverlayForPage(overlayId int, p *page) string {
 	)
 	// Draw trim marks
 
-	if !*continuousTrimMarks {
+	if !*longTrimMarks {
 		stream += fmt.Sprintf(` q
 		    0 0 0 rg %f w
 	      %f %f m %f %f l S
