@@ -89,19 +89,19 @@ func (v *TileSizeFlag) Set(s string) error {
 }
 
 var (
-	inputFile  = flag.String("in", "-", "input PDF")
-	outputFile = flag.String("out", "-", "output PDF")
-	tileTitle  = flag.String("title", "", "title to show on margin of each tile (defaults to input filename)")
-	debugMode  = flag.Bool("debug", false, "run in debug mode")
+	inputFile     = flag.String("in", "-", "input PDF")
+	outputFile    = flag.String("out", "-", "output PDF")
+	tileTitle     = flag.String("title", "", "title to show on margin of each tile (defaults to input filename)")
+	debugMode     = flag.Bool("debug", false, "run in debug mode")
 	longTrimMarks = flag.Bool("long-trim-marks", false, "Use full width/height trim marks")
-	hideLogo = flag.Bool("hide-logo", false, "Hide the logo")
-	tileSize   TileSizeFlag
+	hideLogo      = flag.Bool("hide-logo", false, "Hide the logo")
+	tileSize      TileSizeFlag
 )
 
 func init() {
 	tileSize.Set("A4")
 	flag.Var(&tileSize, "tile-size",
-		"can be a standard paper size (eg A5), or width x height dimension with a unit (mm, cm, in, pt) (e.g. 6cm x 12in)")
+		"maximum size - can be a standard paper size (eg A5), or width x height dimension with a unit (mm, cm, in, pt) (e.g. 6cm x 12in)")
 }
 
 // getNextFreeObjectId returns the largest object id in the document + 1
@@ -413,10 +413,10 @@ func createOverlayForPage(overlayId int, p *page) string {
 	      %f %f m %f %f l S
 	    Q `,
 			trimMarkLineWidth,
-			mb.llx-1, tb.lly, mb.urx+1, tb.lly,		// bottom trim line
-			mb.llx-1, tb.ury, mb.urx+1, tb.ury,		// top trim line
-			tb.llx, mb.lly-1, tb.llx, mb.ury+1,		// left trim line
-			tb.urx, mb.lly-1, tb.urx, mb.ury+1,		// right trim line
+			mb.llx-1, tb.lly, mb.urx+1, tb.lly, // bottom trim line
+			mb.llx-1, tb.ury, mb.urx+1, tb.ury, // top trim line
+			tb.llx, mb.lly-1, tb.llx, mb.ury+1, // left trim line
+			tb.urx, mb.lly-1, tb.urx, mb.ury+1, // right trim line
 		)
 	}
 	// Draw tile ref
