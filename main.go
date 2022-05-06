@@ -31,11 +31,9 @@ const (
 
 	// Min page size in mm
 	minPageDimension = (bleedMargin + trimMargin + trimMarkLineWidth) * 2 * mmInInch / ptsInInch
-
-	creditLine = "CUT WITH PDFTILECUT"
 )
 
-type TileSizeFlag struct {
+type tileSizeFlag struct {
 	name string
 
 	// in millimeters
@@ -45,15 +43,14 @@ type TileSizeFlag struct {
 	isDim bool
 }
 
-func (v *TileSizeFlag) String() string {
+func (v *tileSizeFlag) String() string {
 	if v.isDim {
 		return fmt.Sprintf("%.0fmm x %.0fmm", v.width, v.height)
-	} else {
-		return fmt.Sprintf("%s (%.0fmm x %.0fmm)", v.name, v.width, v.height)
 	}
+	return fmt.Sprintf("%s (%.0fmm x %.0fmm)", v.name, v.width, v.height)
 }
 
-func (v *TileSizeFlag) Set(s string) error {
+func (v *tileSizeFlag) Set(s string) error {
 	// unit to mm ratios
 	unitsToMillimeter := map[string]float32{
 		"mm": 1,
@@ -95,17 +92,17 @@ var (
 	debugMode     = flag.Bool("debug", false, "run in debug mode")
 	longTrimMarks = flag.Bool("long-trim-marks", false, "Use full width/height trim marks")
 	hideLogo      = flag.Bool("hide-logo", false, "Hide the logo")
-	tileSize      TileSizeFlag
+	tileSize      tileSizeFlag
 )
 
 func init() {
-	tileSize.Set("A4")
+	_ = tileSize.Set("A4")
 	flag.Var(&tileSize, "tile-size",
 		"maximum size - can be a standard paper size (eg A5), or width x height dimension with a unit (mm, cm, in, pt) (e.g. 6cm x 12in)")
 }
 
-// getNextFreeObjectId returns the largest object id in the document + 1
-func getNextFreeObjectId(d string) (int, error) {
+// getNextFreeObjectID returns the largest object id in the document + 1
+func getNextFreeObjectID(d string) (int, error) {
 	m := regexp.MustCompile(`(?m)^xref\s+\d+\s+(\d+)`).FindStringSubmatch(d)
 	if m == nil {
 		return 0, fmt.Errorf("cannot find the next free object id")
@@ -136,7 +133,7 @@ type page struct {
 	trimBox    rect
 	contentIds []int
 
-	parentId int
+	parentID int
 	raw      string
 }
 
@@ -165,7 +162,7 @@ func (p *page) marshal() string {
 		fmt.Fprintf(b, " %d 0 R ", cid)
 	}
 	fmt.Fprintf(b, " ]\n")
-	fmt.Fprintf(b, "  /Parent %d 0 R\n", p.parentId)
+	fmt.Fprintf(b, "  /Parent %d 0 R\n", p.parentID)
 	b.WriteString(p.raw)
 	fmt.Fprintf(b, "\n>>\nendobj\n")
 	return b.String()
@@ -291,9 +288,9 @@ func cutPageToTiles(p *page, tileW, tileH, bleedMargin, trimMargin float32) []*p
 			tile.cropBox = tile.mediaBox
 			tilePages = append(tilePages, &tile)
 
-			tgx += 1
+			tgx++
 		}
-		tgy += 1
+		tgy++
 	}
 
 	return tilePages
@@ -301,11 +298,11 @@ func cutPageToTiles(p *page, tileW, tileH, bleedMargin, trimMargin float32) []*p
 
 // appendPagesToDoc appends the given pages after all the other objects
 // but before the xref block. It also updates the object ids as it goes
-// starting with startId.
-func appendPagesToDoc(d string, startId int, pages []*page) string {
+// starting with startID.
+func appendPagesToDoc(d string, startID int, pages []*page) string {
 	var b strings.Builder
 	for pi, p := range pages {
-		p.id = pi + startId
+		p.id = pi + startID
 		b.WriteString(p.marshal())
 	}
 	return strings.Replace(d, "\nxref\n", "\n"+b.String()+"\n\nxref\n", 1)
@@ -314,16 +311,16 @@ func appendPagesToDoc(d string, startId int, pages []*page) string {
 // replaceAllDocPagesWith updates the first node of the page tree with array
 // containing references to the given pages, effectively replacing all
 // the existing page trees.
-func replaceAllDocPagesWith(d string, pages []*page, pageTreeId int) string {
+func replaceAllDocPagesWith(d string, pages []*page, pageTreeID int) string {
 	b := &strings.Builder{}
 	for _, p := range pages {
 		fmt.Fprintf(b, "%d 0 R\n", p.id)
 	}
 	// Replace the count
-	r := regexp.MustCompile(fmt.Sprintf(`(?ms)^(%d 0 obj\n.*?^\s+/Count\s+)\d+`, pageTreeId))
+	r := regexp.MustCompile(fmt.Sprintf(`(?ms)^(%d 0 obj\n.*?^\s+/Count\s+)\d+`, pageTreeID))
 	d = r.ReplaceAllString(d, fmt.Sprintf(`${1}%d`, len(pages)))
 	// Replace page references
-	r = regexp.MustCompile(fmt.Sprintf(`(?ms)^(%d 0 obj\n.*?^\s+/Kids\s+\[)[^\]]*`, pageTreeId))
+	r = regexp.MustCompile(fmt.Sprintf(`(?ms)^(%d 0 obj\n.*?^\s+/Kids\s+\[)[^\]]*`, pageTreeID))
 	d = r.ReplaceAllString(d, fmt.Sprintf(`${1} %s `, b.String()))
 	return d
 }
@@ -369,7 +366,7 @@ func numToAlpha(n int) string {
 // - other printmarks such as tile/page number
 // This will update the contentIds of the page to include a ref
 // to the new overlay object.
-func createOverlayForPage(overlayId int, p *page) string {
+func createOverlayForPage(overlayID int, p *page) string {
 	mb, bb, tb := p.mediaBox, p.bleedBox, p.trimBox
 	// Draw opaque bleed margin
 	stream := fmt.Sprintf(` q
@@ -462,9 +459,9 @@ func createOverlayForPage(overlayId int, p *page) string {
 			bb.llx-logoScaledSize, bb.lly-logoScaledSize, logoScale, logoScale, logoGSCmds,
 		)
 	}
-	p.contentIds = append(p.contentIds, overlayId)
+	p.contentIds = append(p.contentIds, overlayID)
 	return fmt.Sprintf("%d 0 obj\n<< /Length %d >> stream\n%sendstream\nendobj\n",
-		overlayId, len(stream), stream)
+		overlayID, len(stream), stream)
 }
 
 func process() error {
@@ -480,9 +477,9 @@ func process() error {
 	if m == nil {
 		return fmt.Errorf("cannot find root page tree")
 	}
-	pageTreeId, _ := strconv.Atoi(m[1])
+	pageTreeID, _ := strconv.Atoi(m[1])
 
-	nextId, err := getNextFreeObjectId(data)
+	nextID, err := getNextFreeObjectID(data)
 	if err != nil {
 		return err
 	}
@@ -503,7 +500,7 @@ func process() error {
 	for _, p := range pages {
 		ts := cutPageToTiles(p, tileW, tileH, bleedMargin, trimMargin)
 		for _, t := range ts {
-			t.parentId = pageTreeId
+			t.parentID = pageTreeID
 		}
 		tiles = append(tiles, ts...)
 	}
@@ -512,27 +509,27 @@ func process() error {
 		// Wrap page content with graphics state preserving streams
 		objs := fmt.Sprintf(
 			"%d 0 obj\n<< /Length 1 >> stream\nqendstream\nendobj\n%d 0 obj\n<< /Length 1 >> stream\nQendstream\nendobj\n",
-			nextId, nextId+1)
+			nextID, nextID+1)
 		data = strings.Replace(data, "\nxref\n", "\n"+objs+"\nxref\n", 1)
 		for _, t := range tiles {
-			t.contentIds = append([]int{nextId}, t.contentIds...)
-			t.contentIds = append(t.contentIds, nextId+1)
+			t.contentIds = append([]int{nextID}, t.contentIds...)
+			t.contentIds = append(t.contentIds, nextID+1)
 		}
-		nextId += 2
+		nextID += 2
 	}
 
 	{
 		// Create overlays and add it to the doc
 		b := &strings.Builder{}
 		for _, t := range tiles {
-			b.WriteString(createOverlayForPage(nextId, t))
-			nextId += 1
+			b.WriteString(createOverlayForPage(nextID, t))
+			nextID++
 		}
 		data = strings.Replace(data, "\nxref\n", "\n"+b.String()+"\nxref\n", 1)
 	}
 
-	data = appendPagesToDoc(data, nextId, tiles)
-	data = replaceAllDocPagesWith(data, tiles, pageTreeId)
+	data = appendPagesToDoc(data, nextID, tiles)
+	data = replaceAllDocPagesWith(data, tiles, pageTreeID)
 
 	// Write data back to temp file
 	f, err := ioutil.TempFile("", "pdftilecut-im2-")
@@ -547,7 +544,6 @@ func process() error {
 		return err
 	}
 	f.Close()
-	data = "" // let garbage collector clean this up
 
 	// Fix and write back an optimized PDF
 	if err := convertToOptimizedPDF(f.Name(), *outputFile); err != nil {
