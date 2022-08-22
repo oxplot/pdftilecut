@@ -97,7 +97,7 @@ var (
 func init() {
 	_ = tileSize.Set("A4")
 	flag.Var(&tileSize, "tile-size",
-		"maximum size - can be a standard paper size (eg A5), or width x height dimension with a unit (mm, cm, in, pt) (e.g. 6cm x 12in)")
+		"maximum size including margin - can be a standard paper size (eg A5), or width x height dimension with a unit (mm, cm, in, pt) (e.g. 6cm x 12in)")
 }
 
 // getNextFreeObjectID returns the largest object id in the document + 1
