@@ -38,7 +38,8 @@ $ pdftilecut -tile-size A4 -in mars.pdf -out mars_a4.pdf
 
 **Warning: if printing, ensure your print settings are not re-scaling
 the output (e.g. Scale to fit option must be off, and scale set to
-100%).**
+100%). Always start with a single page and ensure dimensions are
+correct before printing all tiles.**
 
 Below on the left is the original poster, and two of its tiles on the
 right:
